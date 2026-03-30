@@ -35,12 +35,31 @@ public class Item extends BaseEntity {
     @Embedded
     private ItemName name;
 
+    /**
+     * Creates a new Item populated with the provided embedded value objects.
+     *
+     * @param companyInfo the company's identifying information
+     * @param hubInfo     the hub's identifying information
+     * @param name        the item's name value object
+     */
     private Item(CompanyInfo companyInfo, HubInfo hubInfo, ItemName name) {
         this.companyInfo = companyInfo;
         this.hubInfo = hubInfo;
         this.name = name;
     }
 
+    /**
+     * Create a new Item associated with the specified company and hub using the provided item name.
+     *
+     * Constructs CompanyInfo and HubInfo from the given ids and names and returns an Item containing those embedded value objects and the provided ItemName.
+     *
+     * @param companyId   the UUID of the company
+     * @param companyName the display name of the company
+     * @param hubId       the UUID of the hub
+     * @param hubName     the display name of the hub
+     * @param name        the ItemName value object describing the item's name
+     * @return the newly created Item instance
+     */
     public static Item of(UUID companyId, String companyName, UUID hubId, String hubName, ItemName name) {
 
         CompanyInfo companyInfo = CompanyInfo.of(companyId, companyName);
