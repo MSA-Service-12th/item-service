@@ -20,6 +20,14 @@ public class HubInfo {
     @Column(length = 50, name = "hub_name")
     private String name;
 
+    /**
+     * Create a HubInfo value object from the given hub id and name.
+     *
+     * @param hubId   the hub's UUID; must not be null
+     * @param hubName the hub's name; must not be null
+     * @return        a new HubInfo initialized with the provided id and name
+     * @throws IllegalArgumentException if {@code hubId} or {@code hubName} is null
+     */
     public static HubInfo of(UUID hubId, String hubName) {
         if (hubId == null || hubName == null) {
             throw new IllegalArgumentException("허브 정보는 필수입니다.");
