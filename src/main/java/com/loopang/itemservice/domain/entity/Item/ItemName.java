@@ -27,8 +27,8 @@ public class ItemName {
      * @throws IllegalArgumentException if {@code name} is null or blank, or if the normalized value is longer than 255 characters
      */
     public static ItemName of(String name) {
+        validate(name);
         String normalized = normalize(name);
-        validate(normalized);
         return new ItemName(normalized);
     }
 
@@ -43,9 +43,9 @@ public class ItemName {
     }
 
     /**
-     * Validate a normalized item name and throw an exception for invalid values.
+     * Validate an item name and throw an exception for invalid values.
      *
-     * @param name the normalized item name to validate (trimmed and uppercased)
+     * @param name the item name to validate
      * @throws IllegalArgumentException if {@code name} is {@code null} or blank
      * @throws IllegalArgumentException if {@code name.length() > 255}
      */
