@@ -76,7 +76,7 @@ public class Item extends BaseUserEntity {
             throw new ItemBadRequestException("상품명은 필수이며 공백은 불가합니다.");
         }
 
-        String normalizedName = (name != null) ? name.trim().toUpperCase() : null;
+        String normalizedName = name.trim().toUpperCase();
 
         // [업체, 상품명]이 중복일 경우
         checkDuplicated(normalizedName, companyId, itemCheck);
@@ -84,18 +84,6 @@ public class Item extends BaseUserEntity {
         this.associate = new Associate(companyId, companyProvider);
         checkEditable(roleCheck);
         setName(normalizedName);
-    }
-
-    private void setName(String name) {
-
-        if(name == null || name.isBlank()) {
-            throw new ItemBadRequestException("상품명은 필수이며 공백은 불가합니다.");
-        }
-        if (name.length() > 255) {
-            throw new ItemBadRequestException("상품명은 255자 이하입니다.");
-        }
-
-        this.name = name;
     }
 
     // 마스터 관리자, (담당)허브 관리자 , (본인)업체 담당자
@@ -106,7 +94,7 @@ public class Item extends BaseUserEntity {
         }
         checkEditable(roleCheck);
 
-        String normalizedName = (name != null) ? name.trim().toUpperCase() : null;
+        String normalizedName = name.trim().toUpperCase();
 
         UUID companyId = this.associate.getCompany().getId();
         // 현재 상품 제외하고 중복 체크 필요 (ItemCheck 인터페이스 수정 필요할 수 있음)
@@ -122,16 +110,26 @@ public class Item extends BaseUserEntity {
         }
         checkDeletable(roleCheck);
         super.delete(userId);
+    }
 
-        // todo: common 모듈 수정
-//        super.delete(null);
+    private void setName(String name) {
+
+        if(name == null || name.isBlank()) {
+            throw new ItemBadRequestException("상품명은 필수이며 공백은 불가합니다.");
+        }
+        if (name.length() > 255) {
+            throw new ItemBadRequestException("상품명은 255자 이하입니다.");
+        }
+
+        this.name = name;
     }
 
     // 마스터 관리자, (담당)허브 관리자 , (본인)업체 담당자
     private void checkEditable(RoleCheck roleCheck) {
         UUID companyId = this.associate.getCompany().getId();
+        UUID hubId = this.associate.getHub().getId();
         if (!(roleCheck.hasRole("MASTER")
-            || (roleCheck.hasRole("HUB") && roleCheck.isMyHub(companyId))
+            || (roleCheck.hasRole("HUB") && roleCheck.isMyHub(hubId))
             || (roleCheck.hasRole("COMPANY") && roleCheck.isMyCompany(companyId)))) {
             throw new ItemForbiddenException("해당 상품에 대한 생성 또는 수정 권한이 없습니다.");
         }
@@ -140,8 +138,9 @@ public class Item extends BaseUserEntity {
     // 마스터 관리자, (담당)허브 관리자
     private void checkDeletable(RoleCheck roleCheck) {
         UUID companyId = this.associate.getCompany().getId();
+        UUID hubId = this.associate.getHub().getId();
         if (!(roleCheck.hasRole("MASTER")
-            || (roleCheck.hasRole("HUB") && roleCheck.isMyHub(companyId)))) {
+            || (roleCheck.hasRole("HUB") && roleCheck.isMyHub(hubId)))) {
             throw new ItemForbiddenException("해당 상품에 대한 삭제 권한이 없습니다.");
         }
     }

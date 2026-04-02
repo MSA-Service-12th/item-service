@@ -1,17 +1,26 @@
 package com.loopang.itemservice.infrastructure.repository;
 
+import com.loopang.itemservice.domain.model.Item;
 import com.loopang.itemservice.domain.repository.ItemQueryRepository;
+import com.loopang.itemservice.domain.repository.ItemRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class ItemQueryRepositoryImpl implements ItemQueryRepository {
+public class ItemQueryRepositoryImpl implements ItemQueryRepository, ItemRepository {
+
+  // todo: QueryDsl 도입예정
+  ItemJpaRepository jpaRepository;
+
+  @Override
+  public Item save(Item item) {
+    return jpaRepository.save(item);
+  }
 
   @Override
   public boolean exists(String name, UUID companyId) {
-    // todo: QueryDsl 도입예정
-    return false;
+    return jpaRepository.existsByNameAndAssociate_Company_Id(name, companyId);
   }
 }
