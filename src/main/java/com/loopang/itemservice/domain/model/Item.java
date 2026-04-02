@@ -1,10 +1,10 @@
 package com.loopang.itemservice.domain.model;
 
 import com.loopang.common.domain.BaseUserEntity;
-import com.loopang.common.exception.BadRequestException;
-import com.loopang.common.exception.ConflictException;
-import com.loopang.common.exception.ForbiddenException;
-import com.loopang.common.exception.NotFoundException;
+import com.loopang.itemservice.domain.exception.ItemBadRequestException;
+import com.loopang.itemservice.domain.exception.ItemConflictException;
+import com.loopang.itemservice.domain.exception.ItemForbbidenException;
+import com.loopang.itemservice.domain.exception.ItemNotFoundException;
 import com.loopang.itemservice.domain.service.CompanyProvider;
 import com.loopang.itemservice.domain.service.ItemCheck;
 import com.loopang.itemservice.domain.service.RoleCheck;
@@ -73,7 +73,7 @@ public class Item extends BaseUserEntity {
     public Item(String name, UUID companyId, CompanyProvider companyProvider, RoleCheck roleCheck, ItemCheck itemCheck) {
 
         if (name == null || name.isBlank()) {
-            throw new BadRequestException("상품명은 필수이며 공백은 불가합니다.", "name");
+            throw new ItemBadRequestException("상품명은 필수이며 공백은 불가합니다.");
         }
 
         String normalizedName = (name != null) ? name.trim().toUpperCase() : null;
@@ -89,10 +89,10 @@ public class Item extends BaseUserEntity {
     private void setName(String name) {
 
         if(name == null || name.isBlank()) {
-            throw new BadRequestException("상품명은 필수이며 공백은 불가합니다.", "name");
+            throw new ItemBadRequestException("상품명은 필수이며 공백은 불가합니다.");
         }
         if (name.length() > 255) {
-            throw new BadRequestException("상품명은 255자 이하입니다.", "name");
+            throw new ItemBadRequestException("상품명은 255자 이하입니다.");
         }
 
         this.name = name;
@@ -102,7 +102,7 @@ public class Item extends BaseUserEntity {
     // todo: 수정할 시, 이벤트 발행
     public void changeName(String name, RoleCheck roleCheck, ItemCheck itemCheck) {
         if (isDeleted()) {
-            throw new NotFoundException("이미 삭제된 상품입니다.");
+            throw new ItemNotFoundException("이미 삭제된 상품입니다.");
         }
         checkEditable(roleCheck);
 
@@ -118,7 +118,7 @@ public class Item extends BaseUserEntity {
     // 마스터 관리자, (담당)허브 관리자
     public void delete(UUID userId, RoleCheck roleCheck) {
         if (isDeleted()) {
-            throw new NotFoundException("이미 삭제된 상품입니다.");
+            throw new ItemNotFoundException("이미 삭제된 상품입니다.");
         }
         checkDeletable(roleCheck);
         super.delete(userId);
@@ -133,7 +133,7 @@ public class Item extends BaseUserEntity {
         if (!(roleCheck.hasRole("MASTER")
             || (roleCheck.hasRole("HUB") && roleCheck.isMyHub(companyId))
             || (roleCheck.hasRole("COMPANY") && roleCheck.isMyCompany(companyId)))) {
-            throw new ForbiddenException("해당 상품에 대한 생성 또는 수정 권한이 없습니다.");
+            throw new ItemForbbidenException("해당 상품에 대한 생성 또는 수정 권한이 없습니다.");
         }
     }
 
@@ -142,13 +142,13 @@ public class Item extends BaseUserEntity {
         UUID companyId = this.associate.getCompany().getId();
         if (!(roleCheck.hasRole("MASTER")
             || (roleCheck.hasRole("HUB") && roleCheck.isMyHub(companyId)))) {
-            throw new ForbiddenException("해당 상품에 대한 삭제 권한이 없습니다.");
+            throw new ItemForbbidenException("해당 상품에 대한 삭제 권한이 없습니다.");
         }
     }
 
     private void checkDuplicated(String name, UUID companyId, ItemCheck itemCheck) {
         if (itemCheck.isDuplicated(name, companyId)) {
-            throw new ConflictException("이미 등록된 상품입니다. 상품 이름: " + name);
+            throw new ItemConflictException("이미 등록된 상품입니다. 상품 이름: " + name);
         }
     }
 }
