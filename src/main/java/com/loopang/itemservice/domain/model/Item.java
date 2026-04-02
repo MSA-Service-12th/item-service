@@ -137,7 +137,6 @@ public class Item extends BaseUserEntity {
 
     // 마스터 관리자, (담당)허브 관리자
     private void checkDeletable(RoleCheck roleCheck) {
-        UUID companyId = this.associate.getCompany().getId();
         UUID hubId = this.associate.getHub().getId();
         if (!(roleCheck.hasRole("MASTER")
             || (roleCheck.hasRole("HUB") && roleCheck.isMyHub(hubId)))) {
