@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SecurityRoleCheck implements RoleCheck {
 
+  // todo: security 도입 후 내부 구현 예정
+
   @Override
   public boolean hasRole(String role) {
     return false;

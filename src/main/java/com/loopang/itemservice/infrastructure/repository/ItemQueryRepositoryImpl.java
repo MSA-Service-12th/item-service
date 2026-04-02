@@ -11,6 +11,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
 
   @Override
   public boolean exists(String name, UUID companyId) {
+    // todo: QueryDsl 도입예정
     return false;
   }
 }

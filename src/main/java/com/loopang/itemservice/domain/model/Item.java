@@ -70,12 +70,13 @@ public class Item extends BaseUserEntity {
     @Builder
     public Item(String name, UUID companyId, CompanyProvider companyProvider, RoleCheck roleCheck, ItemCheck itemCheck) {
 
+        String normalizedName = name.trim().toUpperCase();
         // [업체, 상품명]이 중복일 경우
-        checkDuplicated(name, companyId, itemCheck);
+        checkDuplicated(normalizedName, companyId, itemCheck);
 
-        checkEditable(roleCheck);
-        setName(name);
         this.associate = new Associate(companyId, companyProvider);
+        checkEditable(roleCheck);
+        setName(normalizedName);
     }
 
     private void setName(String name) {
@@ -134,7 +135,8 @@ public class Item extends BaseUserEntity {
     }
 
     private void checkDuplicated(String name, UUID companyId, ItemCheck itemCheck) {
-        if (itemCheck.isDuplicated(name, companyId)) {
+        String normalizedName = name.trim().toUpperCase();
+        if (itemCheck.isDuplicated(normalizedName, companyId)) {
             throw new CustomException(HttpStatus.CONFLICT, "이미 등록된 상품입니다. 상품 이름: " + name);
         }
     }

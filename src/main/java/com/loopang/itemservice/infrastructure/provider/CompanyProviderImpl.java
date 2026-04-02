@@ -12,6 +12,7 @@ public class CompanyProviderImpl implements CompanyProvider {
 
   @Override
   public CompanyData get(UUID companyId) {
+    // todo: Comapny 서비스 Fegin Client 연동 필요
     return null;
   }
 }
