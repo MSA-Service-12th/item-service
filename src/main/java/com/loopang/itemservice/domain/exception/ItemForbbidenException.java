@@ -1,10 +1,11 @@
 package com.loopang.itemservice.domain.exception;
 
-import jakarta.ws.rs.ForbiddenException;
 
-public class ItemForbbidenException extends ForbiddenException {
+import com.loopang.common.exception.ForbiddenException;
 
-  public ItemForbbidenException(String message) {
+public class ItemForbidenException extends ForbiddenException {
+
+  public ItemForbidenException(String message) {
     super(message);
   }
 }

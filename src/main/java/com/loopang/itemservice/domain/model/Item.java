@@ -3,7 +3,7 @@ package com.loopang.itemservice.domain.model;
 import com.loopang.common.domain.BaseUserEntity;
 import com.loopang.itemservice.domain.exception.ItemBadRequestException;
 import com.loopang.itemservice.domain.exception.ItemConflictException;
-import com.loopang.itemservice.domain.exception.ItemForbbidenException;
+import com.loopang.itemservice.domain.exception.ItemForbidenException;
 import com.loopang.itemservice.domain.exception.ItemNotFoundException;
 import com.loopang.itemservice.domain.service.CompanyProvider;
 import com.loopang.itemservice.domain.service.ItemCheck;
@@ -133,7 +133,7 @@ public class Item extends BaseUserEntity {
         if (!(roleCheck.hasRole("MASTER")
             || (roleCheck.hasRole("HUB") && roleCheck.isMyHub(companyId))
             || (roleCheck.hasRole("COMPANY") && roleCheck.isMyCompany(companyId)))) {
-            throw new ItemForbbidenException("해당 상품에 대한 생성 또는 수정 권한이 없습니다.");
+            throw new ItemForbidenException("해당 상품에 대한 생성 또는 수정 권한이 없습니다.");
         }
     }
 
@@ -142,7 +142,7 @@ public class Item extends BaseUserEntity {
         UUID companyId = this.associate.getCompany().getId();
         if (!(roleCheck.hasRole("MASTER")
             || (roleCheck.hasRole("HUB") && roleCheck.isMyHub(companyId)))) {
-            throw new ItemForbbidenException("해당 상품에 대한 삭제 권한이 없습니다.");
+            throw new ItemForbidenException("해당 상품에 대한 삭제 권한이 없습니다.");
         }
     }
 
