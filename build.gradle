@@ -3,6 +3,9 @@ plugins {
     id 'org.springframework.boot' version '3.5.13'
     id 'io.spring.dependency-management' version '1.1.7'
 }
+ext {
+    springCloudVersion = "2025.0.1"
+}
 
 group = 'com.loopang'
 version = '0.0.1-SNAPSHOT'
@@ -16,14 +19,27 @@ java {
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://maven.pkg.github.com/MSA-Service-12th/common")
+        credentials {
+            username = findProperty('gpr.user')
+            password = findProperty('gpr.token')
+        }
+    }
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'com.loopang:common:0.0.4-SNAPSHOT'
 
-    // jpa
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // eureka
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    // config
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'
@@ -32,9 +48,21 @@ dependencies {
     // postgres
     runtimeOnly 'org.postgresql:postgresql'
 
-    // test
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // lombok for test
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
+    // test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly 'com.h2database:h2'
+
+
+}
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+    }
 }
 
 tasks.named('test') {
