@@ -1,6 +1,7 @@
 package com.loopang.itemservice.domain.model;
 
 import com.loopang.common.domain.BaseUserEntity;
+import com.loopang.common.exception.BadRequestException;
 import com.loopang.common.exception.CustomException;
 import com.loopang.itemservice.domain.service.CompanyProvider;
 import com.loopang.itemservice.domain.service.ItemCheck;
@@ -70,7 +71,12 @@ public class Item extends BaseUserEntity {
     @Builder
     public Item(String name, UUID companyId, CompanyProvider companyProvider, RoleCheck roleCheck, ItemCheck itemCheck) {
 
-        String normalizedName = name.trim().toUpperCase();
+        if (name == null || name.isBlank()) {
+            throw new BadRequestException("상품명은 필수이며 공백은 불가합니다.", "name");
+        }
+
+        String normalizedName = (name != null) ? name.trim().toUpperCase() : null;
+
         // [업체, 상품명]이 중복일 경우
         checkDuplicated(normalizedName, companyId, itemCheck);
 
@@ -88,18 +94,25 @@ public class Item extends BaseUserEntity {
             throw new CustomException(HttpStatus.BAD_REQUEST, "상품명은 255자 이하입니다.", "name");
         }
 
-        this.name = name.trim().toUpperCase();
+        this.name = name;
     }
 
     // 마스터 관리자, (담당)허브 관리자 , (본인)업체 담당자
     // todo: 수정할 시, 이벤트 발행
-    public void changeName(String name, RoleCheck roleCheck) {
+    public void changeName(String name, RoleCheck roleCheck, ItemCheck itemCheck) {
         if (isDeleted()) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "이미 삭제된 상품입니다.");
         }
         checkEditable(roleCheck);
+
+        String normalizedName = (name != null) ? name.trim().toUpperCase() : null;
+
+        UUID companyId = this.associate.getCompany().getId();
+        // 현재 상품 제외하고 중복 체크 필요 (ItemCheck 인터페이스 수정 필요할 수 있음)
+        checkDuplicated(normalizedName, companyId, itemCheck);
         setName(name);
     }
+
 
     // 마스터 관리자, (담당)허브 관리자
     public void delete(UUID userId, RoleCheck roleCheck) {
@@ -135,8 +148,7 @@ public class Item extends BaseUserEntity {
     }
 
     private void checkDuplicated(String name, UUID companyId, ItemCheck itemCheck) {
-        String normalizedName = name.trim().toUpperCase();
-        if (itemCheck.isDuplicated(normalizedName, companyId)) {
+        if (itemCheck.isDuplicated(name, companyId)) {
             throw new CustomException(HttpStatus.CONFLICT, "이미 등록된 상품입니다. 상품 이름: " + name);
         }
     }

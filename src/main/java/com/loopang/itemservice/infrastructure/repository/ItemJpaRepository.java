@@ -7,5 +7,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ItemJpaRepository extends JpaRepository<Item, UUID>, ItemRepository {
 
-//    boolean existsByCompanyInfo_IdAndName(UUID companyId, ItemName name);
 }
