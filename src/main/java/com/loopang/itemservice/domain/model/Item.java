@@ -2,7 +2,9 @@ package com.loopang.itemservice.domain.model;
 
 import com.loopang.common.domain.BaseUserEntity;
 import com.loopang.common.exception.BadRequestException;
-import com.loopang.common.exception.CustomException;
+import com.loopang.common.exception.ConflictException;
+import com.loopang.common.exception.ForbiddenException;
+import com.loopang.common.exception.NotFoundException;
 import com.loopang.itemservice.domain.service.CompanyProvider;
 import com.loopang.itemservice.domain.service.ItemCheck;
 import com.loopang.itemservice.domain.service.RoleCheck;
@@ -20,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 /*
  *
@@ -88,10 +89,10 @@ public class Item extends BaseUserEntity {
     private void setName(String name) {
 
         if(name == null || name.isBlank()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "상품명은 필수이며 공백은 불가합니다.", "name");
+            throw new BadRequestException("상품명은 필수이며 공백은 불가합니다.", "name");
         }
         if (name.length() > 255) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "상품명은 255자 이하입니다.", "name");
+            throw new BadRequestException("상품명은 255자 이하입니다.", "name");
         }
 
         this.name = name;
@@ -101,7 +102,7 @@ public class Item extends BaseUserEntity {
     // todo: 수정할 시, 이벤트 발행
     public void changeName(String name, RoleCheck roleCheck, ItemCheck itemCheck) {
         if (isDeleted()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 삭제된 상품입니다.");
+            throw new NotFoundException("이미 삭제된 상품입니다.");
         }
         checkEditable(roleCheck);
 
@@ -117,10 +118,8 @@ public class Item extends BaseUserEntity {
     // 마스터 관리자, (담당)허브 관리자
     public void delete(UUID userId, RoleCheck roleCheck) {
         if (isDeleted()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 삭제된 상품입니다.");
+            throw new NotFoundException("이미 삭제된 상품입니다.");
         }
-        // todo: null 예외처리
-
         checkDeletable(roleCheck);
         super.delete(userId);
 
@@ -134,7 +133,7 @@ public class Item extends BaseUserEntity {
         if (!(roleCheck.hasRole("MASTER")
             || (roleCheck.hasRole("HUB") && roleCheck.isMyHub(companyId))
             || (roleCheck.hasRole("COMPANY") && roleCheck.isMyCompany(companyId)))) {
-            throw new CustomException(HttpStatus.FORBIDDEN, "해당 상품에 대한 생성 또는 수정 권한이 없습니다.");
+            throw new ForbiddenException("해당 상품에 대한 생성 또는 수정 권한이 없습니다.");
         }
     }
 
@@ -143,13 +142,13 @@ public class Item extends BaseUserEntity {
         UUID companyId = this.associate.getCompany().getId();
         if (!(roleCheck.hasRole("MASTER")
             || (roleCheck.hasRole("HUB") && roleCheck.isMyHub(companyId)))) {
-            throw new CustomException(HttpStatus.FORBIDDEN, "해당 상품에 대한 삭제 권한이 없습니다.");
+            throw new ForbiddenException("해당 상품에 대한 삭제 권한이 없습니다.");
         }
     }
 
     private void checkDuplicated(String name, UUID companyId, ItemCheck itemCheck) {
         if (itemCheck.isDuplicated(name, companyId)) {
-            throw new CustomException(HttpStatus.CONFLICT, "이미 등록된 상품입니다. 상품 이름: " + name);
+            throw new ConflictException("이미 등록된 상품입니다. 상품 이름: " + name);
         }
     }
 }
