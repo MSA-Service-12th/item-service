@@ -1,5 +1,7 @@
 package com.loopang.itemservice.application;
 
+import com.loopang.itemservice.domain.events.ItemEvents;
+import com.loopang.itemservice.domain.exception.ItemNotFoundException;
 import com.loopang.itemservice.domain.model.Item;
 import com.loopang.itemservice.domain.repository.ItemRepository;
 import com.loopang.itemservice.domain.service.CompanyProvider;
@@ -20,6 +22,7 @@ public class ItemService {
     private final RoleCheck roleCheck;
     private final ItemCheck itemCheck;
     private final CompanyProvider companyProvider;
+    private final ItemEvents itemEvents;
 
     // 상품 등록
     public ItemResponseDto create(String name, UUID companyId) {
@@ -37,4 +40,28 @@ public class ItemService {
         return ItemResponseDto.from(item);
 
     }
+
+
+    // 상품 수정
+    public ItemResponseDto update(String name, UUID itemId) {
+        Item item = getItem(itemId);
+        item.changeName(name, roleCheck, itemCheck, itemEvents);
+
+        return ItemResponseDto.from(item);
+    }
+
+    // 상품 삭제
+    public ItemResponseDto delete(UUID itemId, UUID userId) {
+        Item item = getItem(itemId);
+        item.delete(userId, roleCheck);
+
+        return ItemResponseDto.from(item);
+    }
+
+    private Item getItem(UUID itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemNotFoundException("존재하지 않는 상품입니다."));
+    }
+
+
 }
