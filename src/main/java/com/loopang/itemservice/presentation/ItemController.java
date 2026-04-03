@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,11 +33,19 @@ public class ItemController {
     }
 
     @PatchMapping("/items/{itemId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public CommonResponse<ItemResponseDto> update(@RequestBody @Valid ItemRequestDto request,
                                                   @PathVariable UUID itemId) {
         ItemResponseDto response = itemService.update(request.getName(), itemId);
-        return CommonResponse.success( response, "상품이 수정되었습니다.");
+        return CommonResponse.success(response, "상품이 수정되었습니다.");
+    }
+
+    @DeleteMapping("/items/{itemId}")
+    public CommonResponse<ItemResponseDto> delete(@PathVariable UUID itemId) {
+
+        // todo: security 도입 후 수정
+        UUID userId = UUID.randomUUID();
+        ItemResponseDto response = itemService.delete(itemId, userId);
+        return CommonResponse.success(response, "상품이 삭제되었습니다.");
     }
 
 }

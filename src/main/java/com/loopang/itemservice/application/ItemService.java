@@ -50,9 +50,18 @@ public class ItemService {
         return ItemResponseDto.from(item);
     }
 
+    // 상품 삭제
+    public ItemResponseDto delete(UUID itemId, UUID userId) {
+        Item item = getItem(itemId);
+        item.delete(userId, roleCheck);
+
+        return ItemResponseDto.from(item);
+    }
+
     private Item getItem(UUID itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("존재하지 않는 상품입니다."));
     }
+
 
 }
