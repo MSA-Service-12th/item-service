@@ -9,5 +9,4 @@ public interface ItemRepository {
     Item save(Item item);
 
     Optional<Item> findById(UUID itemId);
-    // boolean existsByCompanyInfo_IdAndName(UUID companyId, ItemName name);
 }
