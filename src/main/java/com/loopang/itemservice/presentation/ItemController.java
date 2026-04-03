@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,18 +17,26 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/companies/{companyId}/items")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class ItemController {
 
     private final ItemService itemService;
 
-    @PostMapping
+    @PostMapping("/companies/{companyId}/items")
     @ResponseStatus(HttpStatus.CREATED)
     public CommonResponse<ItemResponseDto> create(@RequestBody @Valid ItemRequestDto request,
-                                                                      @PathVariable UUID companyId) {
+                                                  @PathVariable UUID companyId) {
         ItemResponseDto response = itemService.create(request.getName(), companyId);
         return CommonResponse.success(response, "상품이 등록되었습니다.");
+    }
+
+    @PatchMapping("/items/{itemId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public CommonResponse<ItemResponseDto> update(@RequestBody @Valid ItemRequestDto request,
+                                                  @PathVariable UUID itemId) {
+        ItemResponseDto response = itemService.update(request.getName(), itemId);
+        return CommonResponse.success( response, "상품이 수정되었습니다.");
     }
 
 }

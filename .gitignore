@@ -37,5 +37,9 @@ out/
 ### VS Code ###
 .vscode/
 
+## MAC ##
 .DS_Store
+
+## Project ##
 gradle.properties
+docker-compose.yml

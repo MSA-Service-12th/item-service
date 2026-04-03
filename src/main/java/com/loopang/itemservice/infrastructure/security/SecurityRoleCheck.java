@@ -14,12 +14,12 @@ public class SecurityRoleCheck implements RoleCheck {
 
   @Override
   public boolean hasRole(String role) {
-    return false;
+    return true;
   }
 
   @Override
   public boolean hasRole(List<String> roles) {
-    return false;
+    return true;
   }
 
   @Override
@@ -29,6 +29,6 @@ public class SecurityRoleCheck implements RoleCheck {
 
   @Override
   public boolean isMyHub(UUID companyId) {
-    return false;
+    return true;
   }
 }

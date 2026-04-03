@@ -1,4 +1,8 @@
+server:
+  port: 8081
 spring:
+  profiles:
+    active: dev
   application:
     name: item-service
   config:
@@ -8,7 +12,15 @@ spring:
       discovery:
         enabled: true
         service-id: config-server
-
+  kafka:
+    # 로컬 도커 포트 9092, 9093, 9094를 모두 연결합니다.
+    bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
+    properties:
+      # 로컬 연습용이므로 보안 프로토콜은 PLAINTEXT를 사용합니다.
+      security.protocol: PLAINTEXT
+    ssl:
+      trust-store-location: ""
+      trust-store-password: ""
 eureka:
   client:
     fetch-registry: true

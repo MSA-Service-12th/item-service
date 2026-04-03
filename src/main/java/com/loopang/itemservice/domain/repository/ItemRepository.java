@@ -2,8 +2,12 @@ package com.loopang.itemservice.domain.repository;
 
 
 import com.loopang.itemservice.domain.model.Item;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface ItemRepository {
     Item save(Item item);
-   // boolean existsByCompanyInfo_IdAndName(UUID companyId, ItemName name);
+
+    Optional<Item> findById(UUID itemId);
+    // boolean existsByCompanyInfo_IdAndName(UUID companyId, ItemName name);
 }

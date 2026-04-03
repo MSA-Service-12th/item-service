@@ -1,6 +1,7 @@
 package com.loopang.itemservice.domain.model;
 
 import com.loopang.common.domain.BaseUserEntity;
+import com.loopang.itemservice.domain.events.ItemEvents;
 import com.loopang.itemservice.domain.exception.ItemBadRequestException;
 import com.loopang.itemservice.domain.exception.ItemConflictException;
 import com.loopang.itemservice.domain.exception.ItemForbiddenException;
@@ -58,7 +59,7 @@ public class Item extends BaseUserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "item_id")
+//    @Column(name = "item_id")
     private UUID id;
 
     @Column(nullable = false)
@@ -86,20 +87,28 @@ public class Item extends BaseUserEntity {
         setName(normalizedName);
     }
 
-    // 마스터 관리자, (담당)허브 관리자 , (본인)업체 담당자
-    // todo: 수정할 시, 이벤트 발행
-    public void changeName(String name, RoleCheck roleCheck, ItemCheck itemCheck) {
+    /*
+    *  상품명 수정
+    * : 마스터 관리자, (담당)허브 관리자 , (본인)업체 담당자
+    * */
+    public void changeName(String name, RoleCheck roleCheck, ItemCheck itemCheck, ItemEvents events) {
         if (isDeleted()) {
             throw new ItemNotFoundException("이미 삭제된 상품입니다.");
         }
         checkEditable(roleCheck);
 
         String normalizedName = name.trim().toUpperCase();
+        // 이전 상품명과 같은 경우
+        if(normalizedName.equals(this.name)) {
+            throw new ItemBadRequestException("상품명이 수정되지 않았습니다.");
+        }
 
         UUID companyId = this.associate.getCompany().getId();
-        // 현재 상품 제외하고 중복 체크 필요 (ItemCheck 인터페이스 수정 필요할 수 있음)
         checkDuplicated(normalizedName, companyId, itemCheck);
-        setName(name);
+        setName(normalizedName);
+
+        // 이벤트 호출
+        events.itemChanged(this);
     }
 
 
