@@ -59,7 +59,7 @@ public class Item extends BaseUserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-//    @Column(name = "item_id")
+    @Column(name = "item_id")
     private UUID id;
 
     @Column(nullable = false)
@@ -96,6 +96,10 @@ public class Item extends BaseUserEntity {
             throw new ItemNotFoundException("이미 삭제된 상품입니다.");
         }
         checkEditable(roleCheck);
+
+        if (name == null || name.isBlank()) {
+            throw new ItemBadRequestException("상품명은 필수이며 공백은 불가합니다.");
+        }
 
         String normalizedName = name.trim().toUpperCase();
         // 이전 상품명과 같은 경우
