@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public class ItemQueryRepositoryImpl implements ItemQueryRepository, ItemRepository {
 
   // todo: QueryDsl 도입예정
-  ItemJpaRepository jpaRepository;
+  private final ItemJpaRepository jpaRepository;
 
   @Override
   public Item save(Item item) {
