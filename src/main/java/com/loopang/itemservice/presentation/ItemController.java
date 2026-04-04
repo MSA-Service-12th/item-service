@@ -68,4 +68,12 @@ public class ItemController {
         return CommonResponse.success(page.getContent(), "상품이 성공적으로 조회되었습니다.", PageInfo.from(page));
     }
 
+    @GetMapping("/items/{itemId}")
+    public CommonResponse<ItemResponseDto> getItem(@PathVariable UUID itemId)
+    {
+        // todo: 권한 처리
+        ItemResponseDto response = itemService.getItem(itemId);
+        return CommonResponse.success(response, "상품이 성공적으로 조회되었습니다.");
+    }
+
 }

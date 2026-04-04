@@ -48,7 +48,7 @@ public class ItemService {
 
     // 상품 수정
     public ItemResponseDto update(String name, UUID itemId) {
-        Item item = getItem(itemId);
+        Item item = findItem(itemId);
         item.changeName(name, roleCheck, itemCheck, itemEvents);
 
         return ItemResponseDto.from(item);
@@ -56,13 +56,13 @@ public class ItemService {
 
     // 상품 삭제
     public ItemResponseDto delete(UUID itemId, UUID userId) {
-        Item item = getItem(itemId);
+        Item item = findItem(itemId);
         item.delete(userId, roleCheck);
 
         return ItemResponseDto.from(item);
     }
 
-    private Item getItem(UUID itemId) {
+    private Item findItem(UUID itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("존재하지 않는 상품입니다."));
     }
@@ -80,6 +80,12 @@ public class ItemService {
         return itemRepository.search(keyword, normalizePageable, itemName, companyName, hubName);
     }
 
+    // 단건 조회
+    public ItemResponseDto getItem(UUID itemId) {
+        return ItemResponseDto.from(itemRepository.findById(itemId)
+            .orElseThrow(() -> new ItemNotFoundException("존재하지 않는 상품입니다.")));
+    }
+
     private Pageable normalizePageable(Pageable pageable) {
 
         int page = Math.max(pageable.getPageNumber(), 0);
@@ -95,4 +101,6 @@ public class ItemService {
 
         return PageRequest.of(page, size, sort);
     }
+
+
 }
