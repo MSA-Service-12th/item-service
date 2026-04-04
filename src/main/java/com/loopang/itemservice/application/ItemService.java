@@ -78,7 +78,7 @@ public class ItemService {
 
     // 단건 조회
     public ItemResponseDto getItem(UUID itemId) {
-        return ItemResponseDto.from(itemRepository.findById(itemId)
+        return ItemResponseDto.from(itemQueryRepository.findByIdAndDeletedAtIsNull(itemId)
             .orElseThrow(() -> new ItemNotFoundException("존재하지 않는 상품입니다.")));
     }
 }

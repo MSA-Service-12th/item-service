@@ -84,8 +84,8 @@ public class ItemCustomRepository {
             orders.add(new OrderSpecifier<>(direction, item.associate.hub.name));
         case "createdAt" ->
             orders.add(new OrderSpecifier<>(direction, item.createdAt));
-        default ->
-            orders.add(new OrderSpecifier<>(Order.DESC, item.createdAt));
+        default -> {
+        }
       }
     }
 

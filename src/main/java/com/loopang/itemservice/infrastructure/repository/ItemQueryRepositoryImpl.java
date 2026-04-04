@@ -38,4 +38,9 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository, ItemReposit
   public Page<ItemResponseDto> search(Pageable pageable, ItemSearchCondition request) {
     return itemCustomRepository.search(pageable, request);
   }
+
+  @Override
+  public Optional<Item> findByIdAndDeletedAtIsNull(UUID itemId) {
+    return jpaRepository.findByIdAndDeletedAtIsNull(itemId);
+  }
 }

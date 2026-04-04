@@ -14,4 +14,6 @@ public interface ItemQueryRepository {
   Optional<Item> findById(UUID itemId);
 
   Page<ItemResponseDto> search(Pageable pageable, ItemSearchCondition request);
+
+  Optional<Item> findByIdAndDeletedAtIsNull(UUID itemId);
 }
