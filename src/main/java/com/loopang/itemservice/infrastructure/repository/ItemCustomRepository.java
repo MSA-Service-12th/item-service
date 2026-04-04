@@ -2,6 +2,7 @@ package com.loopang.itemservice.infrastructure.repository;
 
 import com.loopang.itemservice.domain.model.QItem;
 import com.loopang.itemservice.presentation.dto.ItemResponseDto;
+import com.loopang.itemservice.presentation.dto.ItemSearchRequestDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -18,15 +19,15 @@ public class ItemCustomRepository {
 
   private final JPAQueryFactory queryFactory;
 
-  public Page<ItemResponseDto> search(String keyword, Pageable pageable, String itemName, String companyName, String hubName) {
+  public Page<ItemResponseDto> search(Pageable pageable, ItemSearchRequestDto request) {
     QItem item = QItem.item;
 
     // 통합 검색 (상품명 + 회사명 + 허브명)
-    BooleanExpression keywordCondition = keywordCondition(item, keyword);
+    BooleanExpression keywordCondition = keywordCondition(item, request.getQ());
     // 개별 필터 조건
-    BooleanExpression itemNameCondition = itemNameCondition(item, itemName);
-    BooleanExpression companyNameCondition = companyNameCondition(item, companyName);
-    BooleanExpression hubNameCondition = hubNameCondition(item, hubName);
+    BooleanExpression itemNameCondition = itemNameCondition(item, request.getItemName());
+    BooleanExpression companyNameCondition = companyNameCondition(item, request.getCompanyName());
+    BooleanExpression hubNameCondition = hubNameCondition(item, request.getHubName());
 
     List<ItemResponseDto> content = queryFactory
         .select(Projections.constructor(

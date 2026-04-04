@@ -8,6 +8,7 @@ import com.loopang.itemservice.domain.service.CompanyProvider;
 import com.loopang.itemservice.domain.service.ItemCheck;
 import com.loopang.itemservice.domain.service.RoleCheck;
 import com.loopang.itemservice.presentation.dto.ItemResponseDto;
+import com.loopang.itemservice.presentation.dto.ItemSearchRequestDto;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -70,14 +71,9 @@ public class ItemService {
     // 전체 조회
     public Page<ItemResponseDto> search(
         Pageable pageable,
-        String q,
-        String itemName,
-        String companyName,
-        String hubName
+        ItemSearchRequestDto request
     ) {
-        Pageable normalizePageable = normalizePageable(pageable);
-        String keyword = (q == null || q.isBlank()) ? null : q.trim();
-        return itemRepository.search(keyword, normalizePageable, itemName, companyName, hubName);
+        return itemRepository.search(pageable, request);
     }
 
     // 단건 조회
@@ -86,21 +82,21 @@ public class ItemService {
             .orElseThrow(() -> new ItemNotFoundException("존재하지 않는 상품입니다.")));
     }
 
-    private Pageable normalizePageable(Pageable pageable) {
-
-        int page = Math.max(pageable.getPageNumber(), 0);
-
-        int requestedSize = pageable.getPageSize();
-        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
-            ? requestedSize
-            : 10;
-
-        Sort sort = pageable.getSort().isSorted()
-            ? pageable.getSort()
-            : Sort.by(Sort.Direction.DESC, "createdAt");
-
-        return PageRequest.of(page, size, sort);
-    }
+//    private Pageable normalizePageable(Pageable pageable) {
+//
+//        int page = Math.max(pageable.getPageNumber(), 0);
+//
+//        int requestedSize = pageable.getPageSize();
+//        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
+//            ? requestedSize
+//            : 10;
+//
+//        Sort sort = pageable.getSort().isSorted()
+//            ? pageable.getSort()
+//            : Sort.by(Sort.Direction.DESC, "createdAt");
+//
+//        return PageRequest.of(page, size, sort);
+//    }
 
 
 }

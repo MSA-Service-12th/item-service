@@ -4,6 +4,7 @@ import com.loopang.itemservice.domain.model.Item;
 import com.loopang.itemservice.domain.repository.ItemQueryRepository;
 import com.loopang.itemservice.domain.repository.ItemRepository;
 import com.loopang.itemservice.presentation.dto.ItemResponseDto;
+import com.loopang.itemservice.presentation.dto.ItemSearchRequestDto;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository, ItemReposit
   }
 
   @Override
-  public Page<ItemResponseDto> search(String keyword, Pageable normalizePageable, String itemName, String companyName, String hubName) {
-    return itemCustomRepository.search(keyword, normalizePageable, itemName, companyName, hubName);
+  public Page<ItemResponseDto> search(Pageable pageable, ItemSearchRequestDto request) {
+    return itemCustomRepository.search(pageable, request);
   }
 }
