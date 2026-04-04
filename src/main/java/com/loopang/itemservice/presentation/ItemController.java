@@ -1,19 +1,25 @@
 package com.loopang.itemservice.presentation;
 
 import com.loopang.common.response.CommonResponse;
+import com.loopang.common.response.PageInfo;
 import com.loopang.itemservice.application.ItemService;
 import com.loopang.itemservice.presentation.dto.ItemRequestDto;
 import com.loopang.itemservice.presentation.dto.ItemResponseDto;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,6 +52,20 @@ public class ItemController {
         UUID userId = UUID.randomUUID();
         ItemResponseDto response = itemService.delete(itemId, userId);
         return CommonResponse.success(response, "상품이 삭제되었습니다.");
+    }
+
+    @GetMapping("/items")
+    public CommonResponse<List<ItemResponseDto>> getItems(
+        Pageable pageable,
+        @RequestParam(required = false) String q,
+        @RequestParam(required = false) String itemName,
+        @RequestParam(required = false) String companyName,
+        @RequestParam(required = false) String hubName
+    )
+    {
+        // todo: 권한 처리
+        Page<ItemResponseDto> page = itemService.search(pageable, q, itemName, companyName, hubName);
+        return CommonResponse.success(page.getContent(), "상품이 성공적으로 조회되었습니다.", PageInfo.from(page));
     }
 
 }
