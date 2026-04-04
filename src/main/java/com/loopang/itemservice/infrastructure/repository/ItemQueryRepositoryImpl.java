@@ -4,7 +4,7 @@ import com.loopang.itemservice.domain.model.Item;
 import com.loopang.itemservice.domain.repository.ItemQueryRepository;
 import com.loopang.itemservice.domain.repository.ItemRepository;
 import com.loopang.itemservice.presentation.dto.ItemResponseDto;
-import com.loopang.itemservice.presentation.dto.ItemSearchRequestDto;
+import com.loopang.itemservice.presentation.dto.ItemSearchCondition;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class ItemQueryRepositoryImpl implements ItemQueryRepository, ItemRepository {
 
-  // todo: QueryDsl 도입예정
   private final ItemJpaRepository jpaRepository;
   private final ItemCustomRepository itemCustomRepository;
 
@@ -36,7 +35,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository, ItemReposit
   }
 
   @Override
-  public Page<ItemResponseDto> search(Pageable pageable, ItemSearchRequestDto request) {
+  public Page<ItemResponseDto> search(Pageable pageable, ItemSearchCondition request) {
     return itemCustomRepository.search(pageable, request);
   }
 }

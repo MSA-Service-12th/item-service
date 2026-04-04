@@ -5,7 +5,7 @@ import com.loopang.common.response.PageInfo;
 import com.loopang.itemservice.application.ItemService;
 import com.loopang.itemservice.presentation.dto.ItemRequestDto;
 import com.loopang.itemservice.presentation.dto.ItemResponseDto;
-import com.loopang.itemservice.presentation.dto.ItemSearchRequestDto;
+import com.loopang.itemservice.presentation.dto.ItemSearchCondition;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -59,7 +58,7 @@ public class ItemController {
     @GetMapping("/items")
     public CommonResponse<List<ItemResponseDto>> getItems(
         Pageable pageable,
-        @ModelAttribute ItemSearchRequestDto request
+        @ModelAttribute ItemSearchCondition request
     )
     {
         // todo: 권한 처리
