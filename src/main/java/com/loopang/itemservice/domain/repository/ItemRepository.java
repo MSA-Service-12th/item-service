@@ -9,4 +9,5 @@ public interface ItemRepository {
     Item save(Item item);
 
     Optional<Item> findById(UUID itemId);
+
 }

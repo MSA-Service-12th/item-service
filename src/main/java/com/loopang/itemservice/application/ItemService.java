@@ -3,13 +3,17 @@ package com.loopang.itemservice.application;
 import com.loopang.itemservice.domain.events.ItemEvents;
 import com.loopang.itemservice.domain.exception.ItemNotFoundException;
 import com.loopang.itemservice.domain.model.Item;
+import com.loopang.itemservice.domain.repository.ItemQueryRepository;
 import com.loopang.itemservice.domain.repository.ItemRepository;
 import com.loopang.itemservice.domain.service.CompanyProvider;
 import com.loopang.itemservice.domain.service.ItemCheck;
 import com.loopang.itemservice.domain.service.RoleCheck;
 import com.loopang.itemservice.presentation.dto.ItemResponseDto;
+import com.loopang.itemservice.presentation.dto.ItemSearchCondition;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final ItemQueryRepository itemQueryRepository;
     private final RoleCheck roleCheck;
     private final ItemCheck itemCheck;
     private final CompanyProvider companyProvider;
@@ -44,7 +49,7 @@ public class ItemService {
 
     // 상품 수정
     public ItemResponseDto update(String name, UUID itemId) {
-        Item item = getItem(itemId);
+        Item item = findItem(itemId);
         item.changeName(name, roleCheck, itemCheck, itemEvents);
 
         return ItemResponseDto.from(item);
@@ -52,16 +57,28 @@ public class ItemService {
 
     // 상품 삭제
     public ItemResponseDto delete(UUID itemId, UUID userId) {
-        Item item = getItem(itemId);
+        Item item = findItem(itemId);
         item.delete(userId, roleCheck);
 
         return ItemResponseDto.from(item);
     }
 
-    private Item getItem(UUID itemId) {
-        return itemRepository.findById(itemId)
+    private Item findItem(UUID itemId) {
+        return itemQueryRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("존재하지 않는 상품입니다."));
     }
 
+    // 전체 조회
+    public Page<ItemResponseDto> search(
+        Pageable pageable,
+        ItemSearchCondition request
+    ) {
+        return itemQueryRepository.search(pageable, request);
+    }
 
+    // 단건 조회
+    public ItemResponseDto getItem(UUID itemId) {
+        return ItemResponseDto.from(itemQueryRepository.findByIdAndDeletedAtIsNull(itemId)
+            .orElseThrow(() -> new ItemNotFoundException("존재하지 않는 상품입니다.")));
+    }
 }
