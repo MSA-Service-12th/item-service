@@ -94,7 +94,7 @@ public class Item extends BaseUserEntity {
     * : 마스터 관리자, (담당)허브 관리자 , (본인)업체 담당자
     * */
     public void changeName(String name, RoleCheck roleCheck, ItemCheck itemCheck, ItemEvents events,
-        UserType userType, UUID targetCompanyId, UUID myCompanyId, UUID myHubId) {
+        UserType userType, UUID myCompanyId, UUID myHubId) {
         if (isDeleted()) {
             throw new ItemNotFoundException("이미 삭제된 상품입니다.");
         }
@@ -109,6 +109,7 @@ public class Item extends BaseUserEntity {
             throw new ItemBadRequestException("상품명이 수정되지 않았습니다.");
         }
 
+        UUID targetCompanyId = this.associate.getCompany().getId();
         UUID targetHubId = this.associate.getHub().getId();
         checkEditable(roleCheck, userType, targetCompanyId, myCompanyId, targetHubId, myHubId);
         checkDuplicated(normalizedName, targetCompanyId, itemCheck);

@@ -46,15 +46,14 @@ public class ItemController {
             "상품이 등록되었습니다.");
     }
 
-    @PatchMapping("/companies/{targetCompanyId}/items/{itemId}")
+    @PatchMapping("/items/{itemId}")
     public CommonResponse<ItemResponseDto> update(
         @RequestBody @Valid ItemRequestDto request,
-        @PathVariable UUID targetCompanyId,
         @PathVariable UUID itemId,
         @RequestHeader(value = "X-User-Role") String userRole,
         @RequestHeader(value = "X-User-Company-Id") UUID myCompanyId,
         @RequestHeader(value = "X-User-Hub-Id") UUID myHubId) {
-        return CommonResponse.success(itemService.update(request.getName(), itemId, UserType.from(userRole), targetCompanyId, myCompanyId, myHubId),
+        return CommonResponse.success(itemService.update(request.getName(), itemId, UserType.from(userRole), myCompanyId, myHubId),
             "상품이 수정되었습니다.");
     }
 

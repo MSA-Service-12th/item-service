@@ -2,6 +2,7 @@ package com.loopang.itemservice.application;
 
 
 import com.loopang.itemservice.domain.events.ItemEvents;
+import com.loopang.itemservice.domain.exception.ItemForbiddenException;
 import com.loopang.itemservice.domain.exception.ItemNotFoundException;
 import com.loopang.itemservice.domain.model.Item;
 import com.loopang.itemservice.domain.model.UserType;
@@ -52,10 +53,10 @@ public class ItemService {
 
 
     // 상품 수정
-    public ItemResponseDto update(String name, UUID itemId, UserType userType, UUID targetCompanyId,
-        UUID myCompanyId, UUID myHubId) {
+    public ItemResponseDto update(String name, UUID itemId, UserType userType, UUID myCompanyId,
+        UUID myHubId) {
         Item item = findItem(itemId);
-        item.changeName(name, roleCheck, itemCheck, itemEvents, userType, targetCompanyId, myCompanyId, myHubId);
+        item.changeName(name, roleCheck, itemCheck, itemEvents, userType, myCompanyId, myHubId);
 
         return ItemResponseDto.from(item);
     }
@@ -79,6 +80,10 @@ public class ItemService {
         ItemSearchCondition request,
         UserType userType, UUID myHubId) {
 
+        // 권한 검사 (PENDING, 인증되지 않은 사용자 차단)
+        if (userType == null || userType == UserType.PENDING) {
+            throw new ItemForbiddenException("상품 조회 권한이 없습니다.");
+        }
         // 권한이 'HUB'인 경우 본인 소속 허브의 상품만 조회
         UUID targetHubId = (userType == UserType.HUB) ? myHubId : null;
         return itemQueryRepository.search(pageable, request, targetHubId);

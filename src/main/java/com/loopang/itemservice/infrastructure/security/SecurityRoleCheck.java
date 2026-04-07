@@ -115,6 +115,11 @@ public class SecurityRoleCheck implements RoleCheck {
     if (userType == UserType.COMPANY) {
       return;
     }
+
+    if (userType == UserType.DELIVERY) {
+      return;
+    }
+
     throw new ItemForbiddenException("상품 조회 권한이 없습니다.");
   }
 
