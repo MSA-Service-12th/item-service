@@ -1,11 +1,11 @@
 package com.loopang.itemservice.infrastructure;
 
+import com.loopang.itemservice.domain.exception.ItemConflictException;
 import com.loopang.itemservice.domain.repository.ItemQueryRepository;
 import com.loopang.itemservice.domain.service.ItemCheck;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Component
 @RequiredArgsConstructor
@@ -14,9 +14,9 @@ public class ItemCheckImpl implements ItemCheck {
   private final ItemQueryRepository queryRepository;
 
   @Override
-  public boolean isDuplicated(String name, UUID companyId) {
-    if (!StringUtils.hasText(name)) return false;
-
-    return queryRepository.exists(name, companyId);
+  public void checkDuplicated(String name, UUID companyId) {
+    if(queryRepository.exists(name, companyId)) {
+      throw new ItemConflictException("이미 등록된 상품입니다. 상품 이름: " + name);
+    }
   }
 }
