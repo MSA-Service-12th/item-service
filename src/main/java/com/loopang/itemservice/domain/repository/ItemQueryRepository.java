@@ -13,7 +13,8 @@ public interface ItemQueryRepository {
 
   Optional<Item> findById(UUID itemId);
 
-  Page<ItemResponseDto> search(Pageable pageable, ItemSearchCondition request);
+  Page<ItemResponseDto> search(Pageable pageable, ItemSearchCondition request, UUID myHubId);
 
   Optional<Item> findByIdAndDeletedAtIsNull(UUID itemId);
+
 }

@@ -10,6 +10,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,7 +24,7 @@ public class ItemCustomRepository {
 
   private final JPAQueryFactory queryFactory;
 
-  public Page<ItemResponseDto> search(Pageable pageable, ItemSearchCondition request) {
+  public Page<ItemResponseDto> search(Pageable pageable, ItemSearchCondition request, UUID myHubId) {
     QItem item = QItem.item;
 
     // 통합 검색 (상품명 + 회사명 + 허브명)
@@ -33,6 +34,7 @@ public class ItemCustomRepository {
     BooleanExpression companyNameCondition = companyNameCondition(item, request.getCompanyName());
     BooleanExpression hubNameCondition = hubNameCondition(item, request.getHubName());
     BooleanExpression deletedCondition = item.deletedAt.isNull();
+    BooleanExpression hubIdCondition = hubIdCondition(item, myHubId); // 권한이 "HuB"인 경우 본인 허브만 조회
 
     List<ItemResponseDto> content = queryFactory
         .select(Projections.constructor(
@@ -50,7 +52,8 @@ public class ItemCustomRepository {
             , itemNameCondition
             , companyNameCondition
             , hubNameCondition
-            , deletedCondition)
+            , deletedCondition
+            , hubIdCondition)
         .orderBy(getOrderSpecifiers(pageable, item))
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
@@ -63,10 +66,18 @@ public class ItemCustomRepository {
             , itemNameCondition
             , companyNameCondition
             , hubNameCondition
-            , deletedCondition)
+            , deletedCondition
+            , hubIdCondition)
         .fetchOne();
 
     return new PageImpl<>(content, pageable, total == null ? 0 : total);
+  }
+
+  private BooleanExpression hubIdCondition(QItem item, UUID myHubId) {
+    if (myHubId == null) {
+      return null;
+    }
+    return item.associate.hub.id.eq(myHubId);
   }
 
   private OrderSpecifier<?>[] getOrderSpecifiers(Pageable pageable, QItem item) {
